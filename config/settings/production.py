@@ -10,8 +10,6 @@ ALLOWED_HOSTS = [
     for host in os.getenv('ALLOWED_HOSTS', os.getenv('RAILWAY_PUBLIC_DOMAIN', '')).split(',')
     if host.strip()
 ]
-if not ALLOWED_HOSTS:
-    raise RuntimeError('Set ALLOWED_HOSTS or create a Railway public domain before deploying.')
 
 # Django requires origins (including scheme) for POST requests behind HTTPS.
 _railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '').strip()

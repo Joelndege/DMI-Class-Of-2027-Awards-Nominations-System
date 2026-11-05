@@ -5,14 +5,18 @@ DEBUG = False
 
 # Railway injects RAILWAY_PUBLIC_DOMAIN after a public domain has been created.
 # ALLOWED_HOSTS can also be set explicitly for Railway or a custom domain.
+_default_railway_domain = 'dmi-class-of-2027-awards-nominations-system-production.up.railway.app'
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv('ALLOWED_HOSTS', os.getenv('RAILWAY_PUBLIC_DOMAIN', '')).split(',')
+    for host in os.getenv(
+        'ALLOWED_HOSTS',
+        os.getenv('RAILWAY_PUBLIC_DOMAIN', _default_railway_domain),
+    ).split(',')
     if host.strip()
 ]
 
 # Django requires origins (including scheme) for POST requests behind HTTPS.
-_railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '').strip()
+_railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', _default_railway_domain).strip()
 _default_csrf_origins = f'https://{_railway_domain}' if _railway_domain else ''
 CSRF_TRUSTED_ORIGINS = [
     origin.strip().rstrip('/')

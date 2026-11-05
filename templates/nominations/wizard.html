@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nomination Wizard - DMI Class of 2027 Awards{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Top Progress Bar & Header -->
+    <div class="mb-8 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-md">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+                <span class="text-xs uppercase tracking-[0.2em] font-semibold text-amber-400 block">Class of 2027 Ballot</span>
+                <h1 class="text-xl sm:text-2xl font-heading font-bold text-neutral-100">
+                    Category <span id="current-step-display">1</span> of {{ total_steps }}
+                </h1>
+            </div>
+
+            <!-- Autosave Indicator & Quick Links -->
+            <div class="flex items-center gap-3">
+                <span id="save-indicator" class="text-xs text-neutral-400 flex items-center gap-1.5 transition-opacity opacity-0">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Saved</span>
+                </span>
+                <a href="{% url 'nominations:review' %}" class="text-xs font-semibold px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1.5">
+                    <span>Review Ballot</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Progress Track -->
+        <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
+            <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-amber-400 h-2 rounded-full transition-all duration-300" style="width: 5%;"></div>
+        </div>
+
+        <!-- Step navigator pills (scrollable on mobile) -->
+        <div class="mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+            {% for item in steps_data %}
+            <button type="button"
+                    class="step-pill flex-shrink-0 w-8 h-8 rounded-lg border text-xs font-heading font-bold flex items-center justify-center transition-all
+                           {% if item.entry and not item.entry.skipped and item.entry.nom_a_first %}
+                               border-amber-500/60 bg-amber-500/20 text-amber-300
+                           {% elif item.entry and item.entry.skipped %}
+                               border-neutral-700 bg-neutral-800/80 text-neutral-500
+                           {% else %}
+                               border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-700
+                           {% endif %}"
+                    data-step="{{ item.step_number }}"
+                    title="{{ item.category.name }}">
+                {{ item.step_number }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Wizard Steps Form -->
+    <div id="wizard-container" class="relative">
+        {% for item in steps_data %}
+        <div class="wizard-step {% if forloop.first %}active{% else %}hidden{% endif %} bg-neutral-900 border border-amber-500/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_35px_rgba(201,168,76,0.08)]"
+             data-step="{{ item.step_number }}"
+             data-category-id="{{ item.category.id }}"
+             data-accepts-online="{{ item.category.accepts_online_nominations|yesno:'true,false' }}">
+
+            <!-- Category Header -->
+            <div class="pb-6 border-b border-neutral-800 mb-6">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        Award #{{ item.category.display_order }}
+                    </span>
+                    <span class="text-xs font-medium uppercase tracking-wider text-neutral-400">
+                        Type: {{ item.category.get_slot_type_display }}
+                    </span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-heading font-bold text-neutral-100">
+                    {{ item.category.name }}
+                </h2>
+                {% if item.category.description %}
+                <p class="text-sm text-neutral-400 mt-2">
+                    {{ item.category.description }}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- If Dinner Selected Category -->
+            {% if not item.category.accepts_online_nominations %}
+            <div class="p-6 rounded-xl bg-neutral-950 border border-neutral-800 text-center my-6">
+                <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-heading font-semibold text-neutral-200 mb-1">Selected at Graduation Dinner</h3>
+                <p class="text-xs text-neutral-400 max-w-md mx-auto leading-relaxed">
+                    This prestigious award is selected live at the dinner gala. No online nomination is required for this award.
+                </p>
+            </div>
+            {% else %}
+            <!-- Nomination Fields -->
+            <div class="space-y-6">
+                <!-- Slot A -->
+                <div class="p-5 rounded-xl bg-neutral-950/70 border border-neutral-800/80">
+                    <h3 class="text-sm font-heading font-semibold text-amber-400 mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span>{{ item.category.slot_a_label|default:"Nominee" }}</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">First Name</label>
+                            <input type="text"
+                                   name="nom_a_first_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_a_first|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="First name">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">Last Name</label>
+                            <input type="text"
+                                   name="nom_a_last_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_a_last|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="Last name">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">Programme / Major (Optional)</label>
+                            <input type="text"
+                                   name="nom_a_programme_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_a_programme|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="e.g. Computer Science, Accounting, Law">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slot B (if gendered or pair) -->
+                {% if item.category.slot_type == 'gendered' or item.category.slot_type == 'pair' %}
+                <div class="p-5 rounded-xl bg-neutral-950/70 border border-neutral-800/80">
+                    <h3 class="text-sm font-heading font-semibold text-amber-400 mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span>{{ item.category.slot_b_label|default:"Second Nominee" }}</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">First Name</label>
+                            <input type="text"
+                                   name="nom_b_first_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_b_first|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="First name">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">Last Name</label>
+                            <input type="text"
+                                   name="nom_b_last_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_b_last|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="Last name">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium text-neutral-300 mb-1">Programme / Major (Optional)</label>
+                            <input type="text"
+                                   name="nom_b_programme_{{ item.category.id }}"
+                                   value="{{ item.entry.nom_b_programme|default:'' }}"
+                                   class="field-input w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                                   placeholder="e.g. Computer Science, Accounting, Law">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Wizard Step Actions -->
+            <div class="pt-8 border-t border-neutral-800 mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                    <button type="button"
+                            class="btn-prev w-full sm:w-auto px-5 py-2.5 rounded-xl border border-neutral-800 hover:border-neutral-700 bg-neutral-800 text-neutral-300 text-xs font-semibold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                        &larr; Previous
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <button type="button"
+                            class="btn-skip w-full sm:w-auto px-5 py-2.5 rounded-xl border border-neutral-800 hover:border-neutral-700 bg-neutral-950 text-neutral-400 hover:text-neutral-200 text-xs font-semibold uppercase tracking-wider transition-all">
+                        Skip Category
+                    </button>
+
+                    {% if forloop.last %}
+                    <button type="button"
+                            class="btn-next w-full sm:w-auto px-6 py-2.5 rounded-xl font-heading font-semibold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 shadow-md transition-all">
+                        Review Ballot &rarr;
+                    </button>
+                    {% else %}
+                    <button type="button"
+                            class="btn-next w-full sm:w-auto px-6 py-2.5 rounded-xl font-heading font-semibold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 shadow-md transition-all">
+                        Save & Next &rarr;
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/wizard.js' %}"></script>
+{% endblock %}
+

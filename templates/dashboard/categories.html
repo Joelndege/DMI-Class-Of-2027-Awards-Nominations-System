@@ -1,0 +1,101 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block dashboard_content %}
+<div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+    <div class="flex items-center justify-between pb-4 mb-6 border-b border-neutral-800">
+        <div>
+            <h2 class="text-xl font-heading font-bold text-neutral-100">Category Management</h2>
+            <p class="text-xs text-neutral-400 mt-1">Configure active state and online eligibility for all 20 categories</p>
+        </div>
+        <span class="text-xs font-semibold px-3 py-1 rounded bg-neutral-800 text-amber-400 border border-neutral-700">
+            Total {{ categories.count }} Categories
+        </span>
+    </div>
+
+    <!-- Table of Categories -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-neutral-300">
+            <thead class="bg-neutral-950 text-neutral-400 uppercase tracking-wider text-[11px] border-b border-neutral-800">
+                <tr>
+                    <th class="py-3 px-4 font-semibold">Order</th>
+                    <th class="py-3 px-4 font-semibold">Category Name</th>
+                    <th class="py-3 px-4 font-semibold">Slot Type</th>
+                    <th class="py-3 px-4 font-semibold">Nomination Mode</th>
+                    <th class="py-3 px-4 font-semibold">Status</th>
+                    <th class="py-3 px-4 font-semibold">Votes</th>
+                    <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-800/80">
+                {% for cat in categories %}
+                <tr class="hover:bg-neutral-850/50 transition-colors">
+                    <td class="py-3.5 px-4 font-mono text-amber-400 font-bold">
+                        #{{ cat.display_order }}
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-neutral-100">
+                        {{ cat.name }}
+                        {% if cat.description %}
+                        <span class="block text-[11px] text-neutral-500 font-normal truncate max-w-xs">{{ cat.description }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] uppercase font-semibold
+                                     {% if cat.slot_type == 'gendered' %}bg-purple-950 text-purple-300 border border-purple-800
+                                     {% elif cat.slot_type == 'pair' %}bg-cyan-950 text-cyan-300 border border-cyan-800
+                                     {% else %}bg-amber-950 text-amber-300 border border-amber-800{% endif %}">
+                            {{ cat.get_slot_type_display }}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        {% if cat.accepts_online_nominations %}
+                        <span class="text-emerald-400 flex items-center gap-1 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online Ballot
+                        </span>
+                        {% else %}
+                        <span class="text-neutral-400 flex items-center gap-1 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-neutral-600"></span> Dinner Selected
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3.5 px-4">
+                        {% if cat.is_active %}
+                        <span class="text-emerald-400 font-medium">Active</span>
+                        {% else %}
+                        <span class="text-rose-400 font-medium">Disabled</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3.5 px-4 font-mono font-bold text-amber-400">
+                        {{ cat.nom_count }}
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <div class="inline-flex items-center gap-2">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="category_id" value="{{ cat.id }}">
+                                <input type="hidden" name="action" value="toggle_online">
+                                <button type="submit"
+                                        class="px-2.5 py-1 rounded text-[11px] font-semibold border border-neutral-700 bg-neutral-800 hover:bg-neutral-750 text-neutral-300 transition-colors">
+                                    {% if cat.accepts_online_nominations %}Make Dinner{% else %}Make Online{% endif %}
+                                </button>
+                            </form>
+
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="category_id" value="{{ cat.id }}">
+                                <input type="hidden" name="action" value="toggle_active">
+                                <button type="submit"
+                                        class="px-2.5 py-1 rounded text-[11px] font-semibold border transition-colors
+                                               {% if cat.is_active %}bg-rose-950/60 border-rose-800 text-rose-300 hover:bg-rose-900{% else %}bg-emerald-950/60 border-emerald-800 text-emerald-300 hover:bg-emerald-900{% endif %}">
+                                    {% if cat.is_active %}Disable{% else %}Enable{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

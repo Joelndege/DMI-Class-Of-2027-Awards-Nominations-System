@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DMI Class of 2027 Awards Nomination System{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS Output -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    
+    <!-- Alpine.js / Feather icons if needed -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-neutral-950 text-neutral-100 font-sans min-h-screen flex flex-col selection:bg-amber-500 selection:text-black">
+    <!-- Navbar -->
+    {% include 'partials/_navbar.html' %}
+
+    <!-- Toast / Flash Messages -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
+        {% include 'partials/_messages.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-900/90 border-t border-amber-500/20 py-8 mt-16 text-center text-sm text-neutral-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-xs tracking-wider uppercase text-neutral-400">
+                    Sponsored and developed by <span class="font-semibold text-amber-400">Nzeru Digital Systems</span>
+                </div>
+                <p class="text-xs text-neutral-500">
+                    &copy; 2027 DMI Class of 2027. Celebrating the DMI Class of 2027.
+                </p>
+                <div class="flex items-center gap-4 text-xs">
+                    <a href="{% url 'landing' %}" class="hover:text-amber-400 transition-colors">Home</a>
+                    <a href="{% url 'nominations:wizard' %}" class="hover:text-amber-400 transition-colors">Nominate</a>
+                    {% if user.is_staff %}
+                    <a href="{% url 'dashboard:overview' %}" class="text-amber-400 hover:text-amber-300 transition-colors font-medium">Admin Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

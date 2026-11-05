@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}DMI Class of 2027 Finale Awards{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative flex items-center overflow-hidden" style="background-image: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.4) 55%, rgba(10,10,10,.92)), url('{% static 'images/finale-awards-stage.webp' %}'); background-size: cover; background-position: center; min-height: 78vh;">
+
+    <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10 text-center" style="padding: 8rem 1rem 3rem;">
+        <!-- Status Pill -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/40 bg-neutral-900/80 backdrop-blur-sm mb-6 shadow-sm">
+            {% if period.maintenance_mode %}
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span class="text-xs font-semibold tracking-wider uppercase text-rose-400">Maintenance Mode Active</span>
+            {% elif period.is_open %}
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-semibold tracking-wider uppercase text-emerald-400">Official Nominations Open</span>
+            {% else %}
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-semibold tracking-wider uppercase text-amber-400">Nominations Closed</span>
+            {% endif %}
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-heading font-bold tracking-tight text-white max-w-4xl mx-auto leading-tight drop-shadow-lg">
+            DMI Class of 2027<br><span class="text-amber-300">Finale Awards</span>
+        </h1>
+
+        <p class="mt-6 text-base sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed drop-shadow">
+            A celebration of the people and moments that made our class.
+        </p>
+
+        <!-- CTA Action Buttons -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'nominations:wizard' %}"
+               class="w-full sm:w-auto px-8 py-4 rounded-full font-heading font-bold text-base bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-neutral-950 shadow-[0_0_25px_rgba(201,168,76,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                Make a Nomination &rarr;
+            </a>
+            <a href="#categories"
+               class="w-full sm:w-auto px-8 py-4 rounded-full font-medium text-base text-neutral-200 bg-neutral-900/80 hover:bg-neutral-800 border border-amber-500/30 hover:border-amber-500/60 transition-all">
+                View Award Categories
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-16 bg-neutral-900/40 border-y border-amber-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-neutral-100">Simple 3-Step Process</h2>
+            <p class="text-xs sm:text-sm text-neutral-400 mt-2">Nominate your classmates with complete integrity and ease</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6 rounded-2xl bg-neutral-900 border border-neutral-800 relative">
+                <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 font-heading font-bold flex items-center justify-center mb-4">
+                    1
+                </div>
+                <h3 class="text-lg font-heading font-semibold text-neutral-100 mb-2">Sign in to nominate</h3>
+                <p class="text-sm text-neutral-400 leading-relaxed">
+                    Sign in with your email address or username and password to continue.
+                </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-neutral-900 border border-neutral-800 relative">
+                <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 font-heading font-bold flex items-center justify-center mb-4">
+                    2
+                </div>
+                <h3 class="text-lg font-heading font-semibold text-neutral-100 mb-2">Step-by-Step Wizard</h3>
+                <p class="text-sm text-neutral-400 leading-relaxed">
+                    Fill in your nominees category by category. Skip awards you prefer to pass on; your draft autosaves in real time.
+                </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-neutral-900 border border-neutral-800 relative">
+                <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 font-heading font-bold flex items-center justify-center mb-4">
+                    3
+                </div>
+                <h3 class="text-lg font-heading font-semibold text-neutral-100 mb-2">Review & Submit</h3>
+                <p class="text-sm text-neutral-400 leading-relaxed">
+                    Review your nominees and submit your choices.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Showcase -->
+<section id="categories" class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+                <span class="text-xs uppercase tracking-[0.2em] font-semibold text-amber-400 block mb-2">The Honors List</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-neutral-100">Official Award Categories</h2>
+            </div>
+            <p class="text-sm text-neutral-400 mt-2 md:mt-0">
+                Total {{ categories_count }} awards across leadership, academia, lifestyle, and spirit.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for cat in categories %}
+            <div class="bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(201,168,76,0.15)] flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <span class="text-xs font-heading font-bold text-amber-400/80 bg-neutral-800/80 px-2.5 py-1 rounded-md">
+                            #{{ cat.display_order }}
+                        </span>
+                        
+                        <div class="flex items-center gap-1.5">
+                            {% if cat.slot_type == 'gendered' %}
+                            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-purple-950/70 border border-purple-700/50 text-purple-300">
+                                Male + Female
+                            </span>
+                            {% elif cat.slot_type == 'pair' %}
+                            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-700/50 text-cyan-300">
+                                Pair / Duo
+                            </span>
+                            {% else %}
+                            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-amber-950/70 border border-amber-700/50 text-amber-300">
+                                Single
+                            </span>
+                            {% endif %}
+
+                            {% if not cat.accepts_online_nominations %}
+                            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-400">
+                                Dinner Choice
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-heading font-bold text-neutral-100 group-hover:text-amber-300 transition-colors mb-2">
+                        {{ cat.name }}
+                    </h3>
+                    
+                    <p class="text-xs text-neutral-400 leading-relaxed mb-4">
+                        {% if cat.description %}
+                            {{ cat.description }}
+                        {% elif cat.slot_type == 'gendered' %}
+                            Recognizing the outstanding {{ cat.slot_a_label }} and {{ cat.slot_b_label }} of the graduating class.
+                        {% elif cat.slot_type == 'pair' %}
+                            Honoring the most memorable partners: {{ cat.slot_a_label }} & {{ cat.slot_b_label }}.
+                        {% else %}
+                            Awarded to the top individual nominee representing this honour.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-500">
+                    <span>
+                        {% if cat.slot_type == 'gendered' %}
+                        Slots: {{ cat.slot_a_label }}, {{ cat.slot_b_label }}
+                        {% elif cat.slot_type == 'pair' %}
+                        Duo: 2 Nominees
+                        {% else %}
+                        Slot: {{ cat.slot_a_label }}
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'nominations:wizard' %}" class="text-amber-400/80 hover:text-amber-300 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        Nominate &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Curtain Reveal Animation Trigger
+    document.addEventListener('DOMContentLoaded', () => {
+        const curtain = document.getElementById('theatre-curtain');
+        if (curtain) {
+            setTimeout(() => {
+                curtain.classList.add('curtain-open');
+                // Remove from DOM after transition completes to avoid interfering with scrolling
+                setTimeout(() => {
+                    curtain.style.display = 'none';
+                }, 1300);
+            }, 300);
+        }
+    });
+</script>
+{% endblock %}
+

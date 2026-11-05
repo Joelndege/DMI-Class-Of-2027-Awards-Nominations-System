@@ -1,0 +1,95 @@
+{% load static %}
+<nav class="bg-neutral-900/95 backdrop-blur-md border-b border-amber-500/30 sticky top-0 z-50 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <!-- Brand -->
+            <a href="{% url 'landing' %}" class="flex items-center gap-3 group">
+                <img src="{% static 'images/dmi-university-logo.png' %}" alt="DMI St. John the Baptist University" class="w-12 h-12 rounded-md bg-white object-contain p-0.5 group-hover:scale-105 transition-transform">
+                <div class="flex flex-col">
+                    <span class="font-heading text-lg font-bold tracking-wider text-neutral-100 group-hover:text-amber-400 transition-colors">
+                        CLASS OF 2027
+                    </span>
+                    <span class="text-[10px] tracking-[0.2em] uppercase text-amber-400/80 -mt-1 font-medium">
+                        Finale Awards
+                    </span>
+                </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-6">
+                <a href="{% url 'landing' %}" class="text-sm font-medium text-neutral-300 hover:text-amber-400 transition-colors">
+                    Home
+                </a>
+                <a href="{% url 'landing' %}#categories" class="text-sm font-medium text-neutral-300 hover:text-amber-400 transition-colors">
+                    Categories
+                </a>
+                <a href="{% url 'nominations:wizard' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/60 bg-amber-500/10 text-amber-300 hover:bg-amber-500 hover:text-neutral-950 text-sm font-semibold transition-all shadow-[0_0_12px_rgba(201,168,76,0.15)]">
+                    <span>Vote & Nominate</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                    <a href="{% url 'dashboard:overview' %}" class="text-xs font-semibold uppercase tracking-wider text-amber-400 border border-amber-500/40 bg-amber-950/40 px-3 py-1.5 rounded-md hover:bg-amber-900/50 transition-colors">
+                        Admin Portal
+                    </a>
+                    {% endif %}
+
+                    <div class="flex items-center gap-3 pl-2 border-l border-neutral-800">
+                        <div class="flex flex-col text-right">
+                            <span class="text-xs font-medium text-neutral-200 truncate max-w-[150px]">
+                                {{ user.email }}
+                            </span>
+                            <span class="text-[10px] text-emerald-400">Signed in</span>
+                        </div>
+                        <a href="{% url 'account_logout' %}" class="text-xs text-neutral-400 hover:text-rose-400 transition-colors px-2.5 py-1.5 rounded bg-neutral-800 hover:bg-neutral-800/80">
+                            Log out
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="flex items-center gap-3 pl-2 border-l border-neutral-800">
+                        <a href="{% url 'account_login' %}" class="text-sm font-medium text-neutral-300 hover:text-amber-400 transition-colors">
+                            Sign in
+                        </a>
+                        <a href="{% url 'account_signup' %}" class="text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 text-neutral-950 px-4 py-2 rounded-full hover:from-amber-400 hover:to-amber-500 transition-all shadow-md">
+                            Register
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <div class="md:hidden flex items-center">
+                <button type="button" id="mobile-menu-btn" class="p-2 rounded-md text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 focus:outline-none" aria-label="Toggle navigation">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div class="hidden md:hidden bg-neutral-900 border-b border-amber-500/20 px-4 pt-2 pb-6 space-y-3" id="mobile-menu">
+        <a href="{% url 'landing' %}" class="block text-base font-medium text-neutral-200 hover:text-amber-400">Home</a>
+        <a href="{% url 'landing' %}#categories" class="block text-base font-medium text-neutral-200 hover:text-amber-400">Categories</a>
+        <a href="{% url 'nominations:wizard' %}" class="block text-base font-semibold text-amber-400">Nominate Now</a>
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+            <a href="{% url 'dashboard:overview' %}" class="block text-sm font-semibold text-amber-400">Admin Dashboard</a>
+            {% endif %}
+            <div class="pt-3 border-t border-neutral-800 text-sm text-neutral-400">
+                Signed in as {{ user.email }}
+            </div>
+            <a href="{% url 'account_logout' %}" class="block text-sm text-rose-400">Log out</a>
+        {% else %}
+            <div class="pt-3 border-t border-neutral-800 flex flex-col gap-2">
+                <a href="{% url 'account_login' %}" class="text-sm font-medium text-neutral-200">Sign In</a>
+                <a href="{% url 'account_signup' %}" class="text-sm font-medium text-amber-400">Register Account</a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+

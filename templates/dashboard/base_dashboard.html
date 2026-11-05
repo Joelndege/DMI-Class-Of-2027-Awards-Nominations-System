@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - DMI Class of 2027 Awards{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Dashboard Top Bar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-8 border-b border-neutral-800">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs uppercase tracking-wider font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                    Executive Portal
+                </span>
+                <span class="text-xs text-neutral-500">Staff Privileges Active</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-heading font-bold text-neutral-100">
+                Awards Committee Dashboard
+            </h1>
+        </div>
+
+        <!-- Dashboard Navigation Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 text-xs font-semibold">
+            <a href="{% url 'dashboard:overview' %}"
+               class="px-3.5 py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'overview' %}bg-amber-500 text-neutral-950 font-bold{% else %}bg-neutral-900 text-neutral-300 hover:bg-neutral-850 border border-neutral-800{% endif %}">
+                Overview
+            </a>
+            <a href="{% url 'dashboard:categories' %}"
+               class="px-3.5 py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'categories' %}bg-amber-500 text-neutral-950 font-bold{% else %}bg-neutral-900 text-neutral-300 hover:bg-neutral-850 border border-neutral-800{% endif %}">
+                Categories
+            </a>
+            <a href="{% url 'dashboard:nominations' %}"
+               class="px-3.5 py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'nominations' %}bg-amber-500 text-neutral-950 font-bold{% else %}bg-neutral-900 text-neutral-300 hover:bg-neutral-850 border border-neutral-800{% endif %}">
+                Nominations
+            </a>
+            <a href="{% url 'dashboard:statistics' %}"
+               class="px-3.5 py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'statistics' %}bg-amber-500 text-neutral-950 font-bold{% else %}bg-neutral-900 text-neutral-300 hover:bg-neutral-850 border border-neutral-800{% endif %}">
+                Analytics
+            </a>
+            <a href="{% url 'dashboard:name_review' %}"
+               class="px-3.5 py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'name_review' %}bg-amber-500 text-neutral-950 font-bold{% else %}bg-neutral-900 text-neutral-300 hover:bg-neutral-850 border border-neutral-800{% endif %}">
+                Name Resolution
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard Content Slot -->
+    {% block dashboard_content %}{% endblock %}
+</div>
+{% endblock %}
+

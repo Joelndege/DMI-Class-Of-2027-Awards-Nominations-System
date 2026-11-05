@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}DMI Class of 2027 Finale Awards - Submission{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="bg-neutral-900 border border-amber-500/30 rounded-2xl p-8 sm:p-10 text-center mb-8">
+        {% if nomination_count %}
+        <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400 block mb-3">Submission received</span>
+        <h1 class="text-3xl sm:text-4xl font-heading font-bold text-neutral-100">DMI Class of 2027 Finale Awards</h1>
+        <p class="mt-4 text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
+            Your nominations have been submitted. Thank you for taking part in the celebration.
+        </p>
+        {% else %}
+        <span class="text-xs font-semibold uppercase tracking-widest text-amber-300 block mb-3">No nominees recorded</span>
+        <h1 class="text-3xl sm:text-4xl font-heading font-bold text-neutral-100">DMI Class of 2027 Finale Awards</h1>
+        <p class="mt-4 text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
+            This ballot was submitted without any nominations.
+        </p>
+        {% endif %}
+
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <a href="{% url 'landing' %}"
+               class="px-5 py-3 rounded-lg text-sm font-semibold bg-neutral-800 hover:bg-neutral-700 text-neutral-100 border border-neutral-700 transition-colors">
+                Return to home
+            </a>
+            <button type="button" onclick="window.print()"
+                    class="px-5 py-3 rounded-lg text-sm font-semibold text-amber-200 border border-amber-500/40 hover:bg-amber-500/10 transition-colors">
+                Print receipt
+            </button>
+        </div>
+    </div>
+
+    <section class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-neutral-800 mb-6">
+            <h2 class="text-lg font-heading font-semibold text-neutral-100">
+                Your Submitted Nominations ({{ nomination_count }})
+            </h2>
+            <span class="text-sm text-neutral-400">Account: {{ user.email|default:user.username }}</span>
+        </div>
+
+        {% if nominations %}
+        <div class="space-y-3">
+            {% for nom in nominations %}
+            <article class="p-4 sm:p-5 rounded-xl bg-neutral-950 border border-neutral-800">
+                <h3 class="text-sm font-semibold text-amber-300">{{ nom.category.name }}</h3>
+                <p class="mt-2 text-sm text-neutral-200">
+                    <span class="text-neutral-400">Nominee:</span>
+                    {{ nom.nom_a_first }} {{ nom.nom_a_last }}
+                </p>
+                {% if nom.nom_a_programme %}
+                <p class="mt-1 text-xs text-neutral-400">{{ nom.nom_a_programme }}</p>
+                {% endif %}
+                {% if nom.nom_b_first or nom.nom_b_last %}
+                <p class="mt-3 pt-3 border-t border-neutral-800 text-sm text-neutral-200">
+                    <span class="text-neutral-400">{{ nom.category.slot_b_label|default:"Co-nominee" }}:</span>
+                    {{ nom.nom_b_first }} {{ nom.nom_b_last }}
+                </p>
+                {% if nom.nom_b_programme %}
+                <p class="mt-1 text-xs text-neutral-400">{{ nom.nom_b_programme }}</p>
+                {% endif %}
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-neutral-400">No nominations were recorded on this ballot.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register - DMI Class of 2027 Awards{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+    <div
+        class="w-full max-w-md bg-neutral-900 border border-amber-500/30 rounded-2xl p-8 shadow-[0_0_30px_rgba(201,168,76,0.1)]">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <img src="{% static 'images/dmi-university-logo.png' %}" alt="DMI St. John the Baptist University" class="w-16 h-16 rounded-lg bg-white object-contain p-0.5 mx-auto mb-3">
+            <h1 class="text-2xl font-bold font-heading text-neutral-100">Create Account</h1>
+            <p class="text-xs text-neutral-400 mt-1">Join the DMI Class of 2027 nomination portal</p>
+        </div>
+
+        <p class="text-center text-xs text-neutral-400 mb-6">Register with your email address and password.</p>
+
+        <!-- Registration Form -->
+        <form method="POST" action="{% url 'account_signup' %}" class="space-y-4">
+            {% csrf_token %}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="p-3 rounded-lg bg-rose-950/80 border border-rose-600 text-rose-200 text-xs">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="id_email" class="block text-xs font-medium text-neutral-300 mb-1">Email Address</label>
+                <input type="email" name="email" id="id_email" required
+                    class="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                    placeholder="you@student.edu">
+                {% if form.email.errors %}
+                <p class="text-xs text-rose-400 mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="id_password1" class="block text-xs font-medium text-neutral-300 mb-1">Password</label>
+                <input type="password" name="password1" id="id_password1" required
+                    class="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                    placeholder="••••••••">
+                {% if form.password1.errors %}
+                <p class="text-xs text-rose-400 mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="id_password2" class="block text-xs font-medium text-neutral-300 mb-1">Confirm
+                    Password</label>
+                <input type="password" name="password2" id="id_password2" required
+                    class="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                    placeholder="••••••••">
+                {% if form.password2.errors %}
+                <p class="text-xs text-rose-400 mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <p class="text-[11px] text-neutral-400 leading-relaxed">
+                You can sign in immediately after creating your account. Email verification is disabled for testing.
+            </p>
+
+            <button type="submit"
+                class="w-full py-3 px-4 rounded-xl font-heading font-semibold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all transform active:scale-[0.99] mt-2">
+                Create Account
+            </button>
+        </form>
+
+        <!-- Sign in footer -->
+        <p class="mt-8 text-center text-xs text-neutral-400">
+            Already have an account?
+            <a href="{% url 'account_login' %}"
+                class="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
+                Sign in here
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

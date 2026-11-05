@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Email - DMI Class of 2027 Awards{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md bg-neutral-900 border border-amber-500/30 rounded-2xl p-8 text-center shadow-[0_0_30px_rgba(201,168,76,0.15)]">
+        <div class="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/50 flex items-center justify-center mx-auto mb-6 text-amber-400">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        </div>
+
+        <h1 class="text-2xl font-heading font-bold text-neutral-100 mb-2">Check Your Inbox</h1>
+        
+        <p class="text-sm text-neutral-300 leading-relaxed mb-6">
+            We've sent a verification link to your email address. Please click the link to confirm your account and unlock the nomination portal.
+        </p>
+
+        <div class="p-4 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-400 mb-6 text-left">
+            <span class="text-amber-400 font-semibold block mb-1">Why is verification required?</span>
+            To preserve the integrity of the Class of 2027 Awards and prevent ballot stuffing, all student accounts must be verified before submitting nominations.
+        </div>
+
+        <div class="space-y-3">
+            <a href="{% url 'account_login' %}"
+               class="block w-full py-3 px-4 rounded-xl font-heading font-semibold text-sm bg-gradient-to-r from-amber-500 to-amber-600 text-neutral-950 hover:from-amber-400 hover:to-amber-500 transition-all">
+                Return to Sign In
+            </a>
+            <a href="{% url 'landing' %}"
+               class="block text-xs text-neutral-400 hover:text-neutral-200 transition-colors">
+                Back to Home Page
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

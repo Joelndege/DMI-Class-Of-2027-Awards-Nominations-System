@@ -1,0 +1,74 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-8">
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+        <h2 class="text-xl font-heading font-bold text-neutral-100">Award Voting Statistics &amp; Standings</h2>
+        <p class="text-xs text-neutral-400 mt-1">Aggregated candidate votes across all {{ stats|length }} active categories ({{ total_nominations }} total votes cast)</p>
+    </div>
+
+    <!-- Category Standings Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for s in stats %}
+        <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <span class="text-xs font-heading font-bold text-amber-400/80">#{{ s.category.display_order }}</span>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neutral-950 border border-neutral-800 text-neutral-300">
+                        {{ s.nom_count }} votes
+                    </span>
+                </div>
+                <h3 class="text-lg font-heading font-bold text-neutral-100 mb-4">
+                    {{ s.category.name }}
+                </h3>
+
+                <!-- Top Nominees for Slot A -->
+                <div class="mb-4">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 block mb-2">
+                        Top Nominees ({{ s.category.slot_a_label|default:"Nominee" }})
+                    </span>
+                    {% if s.top_a %}
+                    <div class="space-y-2">
+                        {% for name, count in s.top_a %}
+                        <div class="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850 flex items-center justify-between text-xs">
+                            <span class="font-medium text-neutral-200">{{ name }}</span>
+                            <span class="font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800">
+                                {{ count }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-neutral-500 italic">No votes yet</p>
+                    {% endif %}
+                </div>
+
+                <!-- Top Nominees for Slot B (if gendered or pair) -->
+                {% if s.category.slot_type == 'gendered' or s.category.slot_type == 'pair' %}
+                <div class="mt-4 pt-4 border-t border-neutral-850">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 block mb-2">
+                        Top Nominees ({{ s.category.slot_b_label|default:"Partner" }})
+                    </span>
+                    {% if s.top_b %}
+                    <div class="space-y-2">
+                        {% for name, count in s.top_b %}
+                        <div class="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850 flex items-center justify-between text-xs">
+                            <span class="font-medium text-neutral-200">{{ name }}</span>
+                            <span class="font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800">
+                                {{ count }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-neutral-500 italic">No votes yet</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,141 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block dashboard_content %}
+<!-- Status Management Card -->
+<div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <span class="text-xs uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Live Nomination Controls</span>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-neutral-200">
+                    Nomination Portal Status:
+                    {% if period.is_open %}
+                    <span class="font-bold text-emerald-400">OPEN</span>
+                    {% else %}
+                    <span class="font-bold text-rose-400">CLOSED</span>
+                    {% endif %}
+                </span>
+                <span class="text-neutral-600">|</span>
+                <span class="text-sm text-neutral-200">
+                    Maintenance Mode:
+                    {% if period.maintenance_mode %}
+                    <span class="font-bold text-rose-400">ACTIVE</span>
+                    {% else %}
+                    <span class="font-bold text-emerald-400">INACTIVE</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Toggle Controls -->
+        <div class="flex items-center gap-3">
+            <form method="POST" action="{% url 'dashboard:toggle_period' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_open">
+                <button type="submit"
+                        class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider border transition-all
+                               {% if period.is_open %}bg-rose-950/80 border-rose-700 text-rose-200 hover:bg-rose-900{% else %}bg-emerald-950/80 border-emerald-700 text-emerald-200 hover:bg-emerald-900{% endif %}">
+                    {% if period.is_open %}Close Nominations{% else %}Open Nominations{% endif %}
+                </button>
+            </form>
+
+            <form method="POST" action="{% url 'dashboard:toggle_period' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_maintenance">
+                <button type="submit"
+                        class="px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-750 text-neutral-300 border border-neutral-700 transition-all">
+                    {% if period.maintenance_mode %}Disable Maintenance{% else %}Enable Maintenance{% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium block">Total Submitted Nominations</span>
+        <span class="text-3xl font-heading font-black text-amber-400 mt-2 block">{{ total_nominations }}</span>
+        <span class="text-[11px] text-neutral-500 mt-1 block">Category votes recorded</span>
+    </div>
+
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium block">Students Participating</span>
+        <span class="text-3xl font-heading font-black text-emerald-400 mt-2 block">{{ total_nominators }}</span>
+        <span class="text-[11px] text-neutral-500 mt-1 block">Completed ballots submitted</span>
+    </div>
+
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium block">Active Categories</span>
+        <span class="text-3xl font-heading font-black text-neutral-100 mt-2 block">{{ active_categories }}</span>
+        <span class="text-[11px] text-neutral-500 mt-1 block">Awards open for voting</span>
+    </div>
+
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium block">Dinner Honors</span>
+        <span class="text-3xl font-heading font-black text-neutral-300 mt-2 block">{{ dinner_categories }}</span>
+        <span class="text-[11px] text-neutral-500 mt-1 block">Decided at Gala Dinner</span>
+    </div>
+</div>
+
+<!-- Grid: Recent Nominations & Audit Events -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Submissions -->
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-neutral-800">
+            <h2 class="text-base font-heading font-bold text-neutral-100">Recent Ballot Submissions</h2>
+            <a href="{% url 'dashboard:nominations' %}" class="text-xs text-amber-400 hover:text-amber-300 font-semibold">View All &rarr;</a>
+        </div>
+
+        {% if recent_nominations %}
+        <div class="space-y-3">
+            {% for nom in recent_nominations %}
+            <div class="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800/80 flex items-center justify-between gap-3 text-xs">
+                <div>
+                    <span class="font-semibold text-neutral-200 block text-sm">
+                        {{ nom.category.name }}
+                    </span>
+                    <span class="text-neutral-400">
+                        {{ nom.nom_a_first }} {{ nom.nom_a_last }}
+                        {% if nom.nom_b_first %} &amp; {{ nom.nom_b_first }} {{ nom.nom_b_last }}{% endif %}
+                    </span>
+                </div>
+                <div class="text-right text-[11px] text-neutral-500 flex-shrink-0">
+                    <span class="block text-neutral-400 font-mono">{{ nom.nominator.email|truncatechars:18 }}</span>
+                    <span>{{ nom.submitted_at|date:"M d, H:i" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-xs text-neutral-500 italic py-6 text-center">No nominations recorded yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Audit Event Log -->
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-neutral-800">
+            <h2 class="text-base font-heading font-bold text-neutral-100">Security Audit Trail</h2>
+            <span class="text-[11px] uppercase tracking-wider text-neutral-500">Tamper-Proof</span>
+        </div>
+
+        {% if audit_events %}
+        <div class="space-y-3">
+            {% for ev in audit_events %}
+            <div class="p-3 rounded-xl bg-neutral-950 border border-neutral-800/80 text-xs">
+                <div class="flex items-center justify-between text-[11px] text-neutral-400 mb-1">
+                    <span class="font-semibold text-amber-400 uppercase tracking-wider font-mono">{{ ev.action }}</span>
+                    <span>{{ ev.created_at|date:"M d, H:i:s" }}</span>
+                </div>
+                <p class="text-neutral-300 leading-snug">{{ ev.details }}</p>
+                <span class="text-[10px] text-neutral-500 block mt-1">Actor: {{ ev.actor.email|default:"System" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-xs text-neutral-500 italic py-6 text-center">No audit events logged yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

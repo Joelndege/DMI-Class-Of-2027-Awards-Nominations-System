@@ -1,0 +1,19 @@
+{
+  "name": "class-of-2027-awards-nomination-system",
+  "version": "1.0.0",
+  "description": "DMI Class of 2027 Awards Nomination System",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./static/css/input.css -o ./static/css/app.css --minify",
+    "watch:css": "npx tailwindcss -i ./static/css/input.css -o ./static/css/app.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13"
+  }
+}
+

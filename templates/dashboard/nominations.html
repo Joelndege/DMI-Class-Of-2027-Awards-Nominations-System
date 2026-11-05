@@ -1,0 +1,135 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block dashboard_content %}
+<div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+    <!-- Header with Export -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-6 border-b border-neutral-800">
+        <div>
+            <h2 class="text-xl font-heading font-bold text-neutral-100">Submitted Ballots &amp; Nominations</h2>
+            <p class="text-xs text-neutral-400 mt-1">Found {{ total_count }} matching nomination records</p>
+        </div>
+
+        <a href="?export=csv{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if programme %}&programme={{ programme }}{% endif %}"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Export to CSV</span>
+        </a>
+    </div>
+
+    <!-- Filters Bar -->
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-6 bg-neutral-950 p-4 rounded-xl border border-neutral-800">
+        <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Category</label>
+            <select name="category" class="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-200 outline-none focus:border-amber-400">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cat.display_order }}. {{ cat.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Search Nominee or Voter</label>
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Name or email..."
+                   class="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-200 outline-none focus:border-amber-400">
+        </div>
+
+        <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Programme / Major</label>
+            <input type="text" name="programme" value="{{ programme }}" placeholder="e.g. Computer Science"
+                   class="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-200 outline-none focus:border-amber-400">
+        </div>
+
+        <div class="flex items-end gap-2">
+            <button type="submit" class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-neutral-800 hover:bg-neutral-750 text-amber-400 border border-amber-500/30 transition-colors">
+                Apply Filters
+            </button>
+            <a href="{% url 'dashboard:nominations' %}" class="py-2 px-3 rounded-lg text-xs font-medium text-neutral-400 hover:text-neutral-200 border border-neutral-800 transition-colors">
+                Reset
+            </a>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-neutral-300">
+            <thead class="bg-neutral-950 text-neutral-400 uppercase tracking-wider text-[11px] border-b border-neutral-800">
+                <tr>
+                    <th class="py-3 px-4 font-semibold">Category</th>
+                    <th class="py-3 px-4 font-semibold">Nominee A</th>
+                    <th class="py-3 px-4 font-semibold">Nominee B</th>
+                    <th class="py-3 px-4 font-semibold">Voter</th>
+                    <th class="py-3 px-4 font-semibold">Submitted At</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-800/80">
+                {% for nom in page_obj %}
+                <tr class="hover:bg-neutral-850/50 transition-colors">
+                    <td class="py-3.5 px-4 font-medium text-amber-400">
+                        {{ nom.category.name }}
+                        <span class="block text-[10px] text-neutral-500 uppercase font-mono">{{ nom.category.get_slot_type_display }}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-neutral-100 font-semibold">
+                        {{ nom.nom_a_first }} {{ nom.nom_a_last }}
+                        {% if nom.nom_a_programme %}
+                        <span class="block text-[11px] text-neutral-400 font-normal">({{ nom.nom_a_programme }})</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3.5 px-4 text-neutral-300">
+                        {% if nom.nom_b_first or nom.nom_b_last %}
+                        <span class="font-semibold text-neutral-100">{{ nom.nom_b_first }} {{ nom.nom_b_last }}</span>
+                        {% if nom.nom_b_programme %}
+                        <span class="block text-[11px] text-neutral-400 font-normal">({{ nom.nom_b_programme }})</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="text-neutral-600">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3.5 px-4 font-mono text-neutral-400">
+                        {{ nom.nominator.email|default:nom.nominator.username }}
+                    </td>
+                    <td class="py-3.5 px-4 text-neutral-500">
+                        {{ nom.submitted_at|date:"Y-m-d H:i" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-8 text-center text-neutral-500 italic">
+                        No nominations found matching the selected criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex items-center justify-between pt-6 mt-6 border-t border-neutral-800 text-xs">
+        <span class="text-neutral-500">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        <div class="flex items-center gap-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if programme %}&programme={{ programme }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg border border-neutral-800 hover:bg-neutral-800 text-neutral-300 transition-colors">
+                Previous
+            </a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if programme %}&programme={{ programme }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg border border-neutral-800 hover:bg-neutral-800 text-neutral-300 transition-colors">
+                Next
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

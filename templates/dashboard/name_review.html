@@ -1,0 +1,114 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    <!-- Category Selector -->
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-heading font-bold text-neutral-100">Name Resolution &amp; Variant Merging</h2>
+                <p class="text-xs text-neutral-400 mt-1">Consolidate slight spelling differences (e.g. "John Doe" vs "Johnathan Doe") into canonical names</p>
+            </div>
+
+            <form method="GET" class="flex items-center gap-2">
+                <select name="category" onchange="this.form.submit()" class="px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-xl text-xs text-neutral-200 outline-none focus:border-amber-400">
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category.id == cat.id %}selected{% endif %}>
+                        #{{ cat.display_order }} - {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left: Unassigned Raw Names to Merge -->
+        <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-base font-heading font-bold text-neutral-100 mb-2">Unassigned Submitted Names</h3>
+            <p class="text-xs text-neutral-400 mb-4 leading-relaxed">
+                Select one or more raw variations below to merge into an official canonical name.
+            </p>
+
+            {% if unassigned_names %}
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_group">
+
+                <div class="max-h-64 overflow-y-auto space-y-2 p-3 bg-neutral-950 rounded-xl border border-neutral-850">
+                    {% for name in unassigned_names %}
+                    <label class="flex items-center gap-3 p-2 rounded hover:bg-neutral-900 cursor-pointer text-xs text-neutral-200">
+                        <input type="checkbox" name="selected_names" value="{{ name }}" class="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-amber-500 focus:ring-amber-400">
+                        <span>{{ name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-neutral-300 mb-1">Official Canonical Name</label>
+                    <input type="text" name="canonical_name" required placeholder="e.g. Johnathan Doe"
+                           class="w-full px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-xs outline-none transition-colors">
+                </div>
+
+                <button type="submit"
+                        class="w-full py-2.5 px-4 rounded-xl font-heading font-semibold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 shadow-md transition-all">
+                    Create Variant Group
+                </button>
+            </form>
+            {% else %}
+            <p class="text-xs text-neutral-500 italic py-8 text-center bg-neutral-950 rounded-xl border border-neutral-850">
+                All submitted names for {{ selected_category.name }} have been assigned to canonical groups or no nominations exist.
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Right: Existing Variant Groups -->
+        <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-base font-heading font-bold text-neutral-100 mb-2">Canonical Groups ({{ variant_groups.count }})</h3>
+            <p class="text-xs text-neutral-400 mb-4 leading-relaxed">
+                Active name aliases grouped under official identities.
+            </p>
+
+            {% if variant_groups %}
+            <div class="space-y-4 max-h-[480px] overflow-y-auto pr-1">
+                {% for group in variant_groups %}
+                <div class="p-4 rounded-xl bg-neutral-950 border border-neutral-850 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-sm font-heading font-bold text-amber-400">{{ group.canonical_name }}</span>
+                        
+                        <form method="POST" class="inline-flex items-center gap-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_status">
+                            <input type="hidden" name="group_id" value="{{ group.id }}">
+                            <select name="status" onchange="this.form.submit()" class="px-2 py-1 bg-neutral-900 border border-neutral-800 rounded text-[11px] text-neutral-300">
+                                <option value="same" {% if group.status == 'same' %}selected{% endif %}>Same Person</option>
+                                <option value="review" {% if group.status == 'review' %}selected{% endif %}>Under Review</option>
+                                <option value="different" {% if group.status == 'different' %}selected{% endif %}>Different</option>
+                            </select>
+                        </form>
+                    </div>
+
+                    <div class="text-xs">
+                        <span class="text-neutral-500 block text-[10px] uppercase font-semibold mb-1">Submitted Variants:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            {% for variant in group.variants.all %}
+                            <span class="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 text-[11px]">
+                                {{ variant.submitted_name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-xs text-neutral-500 italic py-8 text-center bg-neutral-950 rounded-xl border border-neutral-850">
+                No canonical groups established yet for this category.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dark-900 text-gray-100 font-sans min-h-screen selection:bg-gold-500 selection:text-black;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-wide;
+  }
+}
+
+/* Custom Gold Gradients & Glows */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #fce08b 0%, #c9a84c 50%, #997424 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-glow {
+  box-shadow: 0 0 15px rgba(201, 168, 76, 0.25), inset 0 0 15px rgba(201, 168, 76, 0.1);
+}
+
+.gold-box-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gold-box-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(201, 168, 76, 0.6);
+  box-shadow: 0 10px 25px -5px rgba(201, 168, 76, 0.15);
+}
+
+/* Theatre Curtain Animation */
+.curtain-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.curtain-panel-left, .curtain-panel-right {
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+
+.curtain-open .curtain-panel-left {
+  transform: translateX(-100%);
+}
+
+.curtain-open .curtain-panel-right {
+  transform: translateX(100%);
+}
+
+/* Wizard transitions */
+.wizard-step {
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.wizard-step.hidden {
+  display: none;
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.wizard-step.active {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In - DMI Class of 2027 Awards{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+    <div
+        class="w-full max-w-md bg-neutral-900 border border-amber-500/30 rounded-2xl p-8 shadow-[0_0_30px_rgba(201,168,76,0.1)]">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <img src="{% static 'images/dmi-university-logo.png' %}" alt="DMI St. John the Baptist University" class="w-16 h-16 rounded-lg bg-white object-contain p-0.5 mx-auto mb-3">
+            <h1 class="text-2xl font-bold font-heading text-neutral-100">Welcome Back</h1>
+            <p class="text-xs text-neutral-400 mt-1">Sign in to cast and review your nominations</p>
+        </div>
+
+        <!-- Email or username & password form -->
+        <!-- Email & Password Form -->
+        <form method="POST" action="{% url 'account_login' %}" class="space-y-4">
+            {% csrf_token %}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="p-3 rounded-lg bg-rose-950/80 border border-rose-600 text-rose-200 text-xs">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="id_login" class="block text-xs font-medium text-neutral-300 mb-1">Email Address or Username</label>
+                <input type="text" name="login" id="id_login" required
+                    class="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                    placeholder="you@student.edu or username">
+                {% if form.login.errors %}
+                <p class="text-xs text-rose-400 mt-1">{{ form.login.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="id_password" class="block text-xs font-medium text-neutral-300">Password</label>
+                    <a href="{% url 'account_reset_password' %}"
+                        class="text-xs text-amber-400/80 hover:text-amber-300 transition-colors">Forgot?</a>
+                </div>
+                <input type="password" name="password" id="id_password" required
+                    class="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 focus:border-amber-400 rounded-xl text-neutral-100 text-sm outline-none transition-colors"
+                    placeholder="••••••••">
+                {% if form.password.errors %}
+                <p class="text-xs text-rose-400 mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" name="remember" id="id_remember" checked
+                    class="h-4 w-4 rounded border-neutral-700 bg-neutral-950 text-amber-500 focus:ring-amber-400 focus:ring-offset-neutral-900">
+                <label for="id_remember" class="ml-2 block text-xs text-neutral-400">
+                    Keep me signed in
+                </label>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 px-4 rounded-xl font-heading font-semibold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all transform active:scale-[0.99] mt-2">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Sign up footer -->
+        <p class="mt-8 text-center text-xs text-neutral-400">
+            Don't have an account yet?
+            <a href="{% url 'account_signup' %}"
+                class="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
+                Register here
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

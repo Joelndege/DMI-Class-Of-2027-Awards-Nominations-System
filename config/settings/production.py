@@ -27,7 +27,14 @@ CSRF_TRUSTED_ORIGINS = [
 if not os.getenv('SECRET_KEY') or SECRET_KEY.startswith('django-insecure-'):
     raise RuntimeError('Set SECRET_KEY to a unique, randomly generated value in Railway.')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # Security settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
